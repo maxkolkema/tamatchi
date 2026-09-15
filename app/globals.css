@@ -34,3 +34,68 @@ header { justify-content: space-between; color: #d7dae3; } .header-actions { gap
 .reset-button { width: 100%; margin-top: 13px; padding: 12px; border-radius: 13px; background: #3a4052; font-size: 10px; font-weight: 900; letter-spacing: .1em; }
 .hint { margin: 18px 0 0; text-align: center; color: #838a9d; font-size: 11px; }
 @media (max-height: 700px) { .pet-card { min-height: 330px; } }
+
+/* Pixel interaction layers: ported from the original hardware overlay contract. */
+.actions button { color: #e7eaf2; }
+.actions button > svg { width: 22px; height: 18px; color: #ff80b8; }
+.actions button:nth-child(2) > svg { color: #75c9f6; }
+.actions button:nth-child(3) > .pixel-toy { color: #ff8fbf; }
+.actions button:nth-child(4) > .pixel-bubbles { transform: scale(.72); }
+.pixel-bubbles { position: relative; display: inline-block; width: 34px; height: 28px; color: #aeefff; }
+.pixel-bubbles i { position: absolute; display: block; width: 12px; height: 12px; border: 3px solid currentColor; border-radius: 50%; box-shadow: inset -2px -2px 0 rgba(57,128,177,.35); }
+.pixel-bubbles i:nth-child(1) { left: 1px; bottom: 1px; }
+.pixel-bubbles i:nth-child(2) { left: 15px; bottom: 8px; width: 10px; height: 10px; }
+.pixel-bubbles i:nth-child(3) { left: 25px; bottom: 1px; width: 7px; height: 7px; border-width: 2px; }
+.pixel-toy { position: relative; display: inline-block; width: 28px; height: 28px; color: #ff8fbf; }
+.toy-string { position: absolute; left: 14px; top: -4px; width: 2px; height: 18px; background: #d4d8e2; box-shadow: 2px 0 0 rgba(0,0,0,.22); }
+.toy-feather { position: absolute; left: 7px; top: 13px; width: 15px; height: 11px; background: currentColor; clip-path: polygon(50% 0, 100% 27%, 72% 50%, 100% 73%, 50% 100%, 0 73%, 28% 50%, 0 27%); box-shadow: inset -3px -2px 0 #71bce8; }
+.effect-layer, .idle-cue { position: absolute; z-index: 3; inset: 0; pointer-events: none; }
+.effect-layer > svg, .effect-layer > span { position: absolute; }
+.hearts-effect { color: #ff79ae; }
+.hearts-effect svg { width: 48px; height: 43px; animation: heart-rise 1.25s steps(5, end) both; }
+.hearts-effect svg:first-child { left: 19%; bottom: 27%; }
+.hearts-effect svg:last-child { right: 18%; bottom: 43%; width: 34px; height: 31px; animation-delay: .16s; }
+.anger-effect { color: #f05559; }
+.anger-effect svg { width: 52px; height: 52px; right: 17%; top: 17%; animation: anger-pop .6s steps(2, end) 3; }
+.bratty-effect { color: #f6f7fb; }
+.bratty-effect svg { width: 32px; height: 48px; right: 18%; top: 18%; animation: cue-pop 1.2s steps(3, end) both; }
+.eating-effect { color: #66bde9; }
+.eating-effect svg { width: 78px; height: 46px; left: 50%; bottom: 25%; transform: translateX(-50%); animation: fish-eat 1.5s steps(6, end) both; }
+.offer-effect { color: #66bde9; }
+.offer-effect svg { width: 66px; height: 38px; right: 14%; top: 20%; animation: cue-bob 1s steps(3, end) both; }
+.play-effect > svg { width: 30px; height: 58px; color: #ffdf58; left: 18%; top: 17%; animation: cue-pop .75s steps(3, end) both; }
+.play-effect .pixel-toy { position: absolute; left: 50%; top: 0; width: 48px; height: 150px; transform-origin: 50% 0; animation: toy-swing 1.4s ease-in-out infinite; }
+.play-effect .toy-string { left: 23px; top: 0; height: 95px; }
+.play-effect .toy-feather { left: 12px; top: 88px; width: 25px; height: 21px; }
+.clean-effect .pixel-bubbles { position: absolute; left: 12%; bottom: 19%; width: 75%; height: 65%; animation: bubbles-up 1.9s steps(6, end) both; }
+.clean-effect .pixel-bubbles i { border-width: 4px; width: 28px; height: 28px; }
+.clean-effect .pixel-bubbles i:nth-child(1) { left: 6%; bottom: 5%; }
+.clean-effect .pixel-bubbles i:nth-child(2) { left: 65%; bottom: 38%; width: 24px; height: 24px; }
+.clean-effect .pixel-bubbles i:nth-child(3) { left: 28%; bottom: 57%; width: 17px; height: 17px; border-width: 3px; }
+.tired-effect { color: #f7f8fb; font-family: ui-monospace, monospace; font-weight: 900; }
+.tired-effect span { animation: z-rise 1.7s steps(5, end) both; }
+.tired-effect span:nth-child(1) { right: 18%; top: 36%; font-size: 26px; }
+.tired-effect span:nth-child(2) { right: 13%; top: 25%; font-size: 20px; animation-delay: .2s; }
+.tired-effect span:nth-child(3) { right: 9%; top: 17%; font-size: 14px; animation-delay: .4s; }
+.idle-cue { color: #f4f5f7; }
+.fish-cue { left: 8%; top: 9%; right: auto; bottom: auto; width: 82px; height: 53px; padding: 14px 12px; border-radius: 3px; background: #f3f5f8; color: #5baee1; animation: cue-bob 1.4s steps(3, end) infinite; }
+.fish-cue::after { content: ""; position: absolute; right: 4px; bottom: -8px; width: 10px; height: 10px; background: #f3f5f8; }
+.fish-cue svg { width: 56px; height: 30px; position: relative; z-index: 1; }
+.thought-cue { left: auto; right: 9%; top: 10%; bottom: auto; width: 68px; height: 36px; padding: 13px 13px; border-radius: 3px; background: #f3f5f8; display: flex; gap: 8px; animation: cue-bob 1.4s steps(3, end) infinite; }
+.thought-cue::after { content: ""; position: absolute; left: 5px; bottom: -9px; width: 10px; height: 10px; background: #f3f5f8; }
+.thought-cue i { display: block; width: 7px; height: 7px; background: #a2a9ba; animation: thought-dot 1.2s steps(3, end) infinite; }
+.thought-cue i:nth-child(2) { animation-delay: .18s; } .thought-cue i:nth-child(3) { animation-delay: .36s; }
+.stink-cue { color: #54d37d; }
+.stink-cue i { position: absolute; width: 4px; height: 48px; border-left: 4px solid currentColor; border-radius: 50%; animation: stink-waft 1.3s ease-in-out infinite; }
+.stink-cue i:nth-child(1) { left: 12%; bottom: 25%; } .stink-cue i:nth-child(2) { left: 21%; bottom: 17%; animation-delay: .25s; }
+.stink-cue i:nth-child(3) { right: 16%; bottom: 24%; animation-delay: .4s; } .stink-cue i:nth-child(4) { right: 8%; bottom: 15%; animation-delay: .65s; }
+@keyframes heart-rise { 0% { opacity: 0; transform: translateY(16px) scale(.45); } 20% { opacity: 1; } 100% { opacity: 0; transform: translateY(-82px) scale(1.05); } }
+@keyframes anger-pop { 0%, 100% { transform: scale(.7); } 50% { transform: scale(1.1); } }
+@keyframes cue-pop { 0% { opacity: 0; transform: scale(.4); } 20%, 78% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(.8); } }
+@keyframes fish-eat { 0% { opacity: 0; transform: translateX(-50%) scale(1); } 15%, 48% { opacity: 1; transform: translateX(-50%) scale(1); } 72% { opacity: 1; transform: translateX(-50%) translateY(12px) scale(.6); } 100% { opacity: 0; transform: translateX(-50%) translateY(20px) scale(.12); } }
+@keyframes toy-swing { 0%, 100% { transform: translateX(-50%) rotate(-22deg); } 50% { transform: translateX(-50%) rotate(24deg); } }
+@keyframes bubbles-up { 0% { opacity: 0; transform: translateY(24px); } 16%, 72% { opacity: 1; } 100% { opacity: 0; transform: translateY(-72px); } }
+@keyframes z-rise { 0% { opacity: 0; transform: translate(0, 8px); } 25%, 70% { opacity: 1; } 100% { opacity: 0; transform: translate(10px, -22px); } }
+@keyframes cue-bob { 50% { transform: translateY(-5px); } }
+@keyframes thought-dot { 0%, 100% { background: #a2a9ba; } 50% { background: #202430; } }
+@keyframes stink-waft { 50% { transform: translate(6px, -16px); opacity: .2; } }
