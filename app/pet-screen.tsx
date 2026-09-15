@@ -21,15 +21,27 @@ function progress(state: State, now: number): State {
 export default function PetScreen() {
   const [pet, setPet] = useState<State>(initial);
   const [statsOpen, setStatsOpen] = useState(false);
+  const [scene, setScene] = useState("scene_japan");
+  const [idleIndex, setIdleIndex] = useState(0);
+  const idleAnimations = ["idle_blink", "idle_ear_twitch", "idle_look_left", "idle_look_right", "idle_head_tilt", "idle_groom"];
 
   useEffect(() => {
     const stored = window.localStorage.getItem("tamatchi.pet");
     if (stored) setPet(progress(JSON.parse(stored) as State, Date.now()));
+    const storedScene = window.localStorage.getItem("tamatchi.scene");
+    if (storedScene) setScene(storedScene);
     const timer = window.setInterval(() => setPet((current) => progress(current, Date.now())), 1000);
-    return () => window.clearInterval(timer);
+    const idleTimer = window.setInterval(() => setIdleIndex((current) => (current + 1) % idleAnimations.length), 5000);
+    return () => { window.clearInterval(timer); window.clearInterval(idleTimer); };
   }, []);
 
   useEffect(() => { window.localStorage.setItem("tamatchi.pet", JSON.stringify(pet)); }, [pet]);
+  useEffect(() => { window.localStorage.setItem("tamatchi.scene", scene); }, [scene]);
+  useEffect(() => {
+    if (!pet.reaction) return;
+    const timer = window.setTimeout(() => setPet((current) => ({ ...current, reaction: "" })), 2200);
+    return () => window.clearTimeout(timer);
+  }, [pet.reaction]);
 
   const needs = pet.needs;
   const status = useMemo(() => {
@@ -39,6 +51,8 @@ export default function PetScreen() {
     if (needs.boredom >= 70) return "...";
     return "FLOOF IS HERE";
   }, [needs, pet.reaction]);
+
+  const animation = pet.reaction === "angy" ? "mood_angy" : pet.reaction === "eating" ? "fall_asleep" : pet.reaction === "playing" ? "idle_head_tilt" : needs.boredom >= 70 ? "mood_bored" : needs.energy <= 10 ? "sleeping" : idleAnimations[idleIndex];
 
   function act(action: "pet" | "feed" | "play" | "clean") {
     setPet((current) => {
@@ -55,16 +69,20 @@ export default function PetScreen() {
 
   return <main className="shell">
     <header><span className="wordmark">TAMATCHI</span><button className="stats-button" onClick={() => setStatsOpen(!statsOpen)}>{statsOpen ? "HIDE" : "STATS"}</button></header>
-    <section className="pet-card" aria-label="Tamatchi pet">
-      <img src="/animations/idle_blink.gif" alt="Tamatchi" />
+    <section className="pet-card" aria-label="Tamatchi pet" role="button" tabIndex={0} onClick={() => act("pet")} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") act("pet"); }}>
+      <img className="scene-background" src={`/animations/${scene}.gif`} alt="" aria-hidden="true" />
+      <img className="pet-animation" src={`/animations/${animation}.gif`} alt="Tamatchi" />
       {needs.hunger >= 60 && <span className="thought">🐟</span>}
       {needs.boredom >= 70 && <span className="thought">…</span>}
       {needs.cleanliness <= 30 && <span className="stink">〰</span>}
     </section>
     <p className="status">{status}</p>
     <nav className="actions" aria-label="Pet actions">
-      {(["pet", "feed", "play", "clean"] as const).map((action) => <button key={action} onClick={() => act(action)}>{action.toUpperCase()}</button>)}
+      {(["pet", "feed", "play", "clean"] as const).map((action) => <button type="button" key={action} onClick={(event) => { event.stopPropagation(); act(action); }}>{action.toUpperCase()}</button>)}
     </nav>
+    <div className="scene-picker" aria-label="Choose a scene">
+      {["scene_japan", "scene_hogwarts", "scene_sf", "scene_texas"].map((option) => <button type="button" className={scene === option ? "selected" : ""} key={option} onClick={() => setScene(option)}>{option.replace("scene_", "").toUpperCase()}</button>)}
+    </div>
     {statsOpen && <section className="needs">{(["hunger", "affection", "energy", "boredom", "cleanliness"] as const).map((key) => <label key={key}><span>{key}</span><meter min="0" max="100" value={needs[key]} /> </label>)}</section>}
     <p className="hint">Add Tamatchi to your Home Screen from Safari to use it like an app.</p>
     <script dangerouslySetInnerHTML={{ __html: `if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');` }} />

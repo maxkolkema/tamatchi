@@ -5,14 +5,20 @@ button { color: inherit; font: inherit; border: 0; cursor: pointer; }
 header { display: flex; justify-content: space-between; align-items: center; color: #d7dae3; }
 .wordmark { font-size: 12px; font-weight: 800; letter-spacing: .28em; }
 .stats-button { background: transparent; font-size: 11px; font-weight: 800; letter-spacing: .12em; opacity: .8; }
-.pet-card { position: relative; flex: 1; min-height: 360px; margin: 24px 0 14px; display: grid; place-items: center; border-radius: 28px; overflow: hidden; background: #1b1e2a; touch-action: manipulation; user-select: none; }
-.pet-card img { width: min(88vw, 420px); image-rendering: auto; }
+.pet-card { position: relative; flex: 1; min-height: 360px; margin: 24px 0 14px; display: grid; place-items: center; border-radius: 28px; overflow: hidden; background: #1b1e2a; touch-action: manipulation; user-select: none; isolation: isolate; outline: none; }
+.pet-card:focus-visible { box-shadow: 0 0 0 3px #67e6a4; }
+.scene-background { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; object-fit: cover; opacity: .72; filter: saturate(.82) brightness(.7); }
+.pet-animation { width: min(254px, 72vw); height: auto; image-rendering: pixelated; filter: drop-shadow(0 12px 18px rgba(0,0,0,.32)); }
 .thought, .stink { position: absolute; top: 16%; right: 14%; display: grid; place-items: center; min-width: 46px; min-height: 46px; border-radius: 50%; background: #f4f5f7; color: #12141c; font-size: 24px; }
 .stink { top: 24%; right: 11%; background: transparent; color: #67e6a4; font-size: 50px; }
 .status { min-height: 24px; margin: 4px 0 14px; text-align: center; color: #d7dae3; font-size: 13px; font-weight: 700; letter-spacing: .12em; }
 .actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; }
 .actions button { padding: 14px 4px; border-radius: 999px; background: #252a38; font-size: 10px; font-weight: 800; letter-spacing: .08em; }
 .actions button:active { transform: scale(.97); background: #394154; }
+.scene-picker { display: flex; gap: 7px; overflow-x: auto; scrollbar-width: none; margin-top: 12px; padding-bottom: 2px; }
+.scene-picker::-webkit-scrollbar { display: none; }
+.scene-picker button { flex: 0 0 auto; padding: 8px 11px; border-radius: 999px; background: transparent; color: #838a9d; font-size: 9px; font-weight: 800; letter-spacing: .08em; }
+.scene-picker button.selected { background: #2c3343; color: #f4f5f7; }
 .needs { display: grid; gap: 9px; margin-top: 17px; padding: 15px; border-radius: 16px; background: #1b1e2a; }
 .needs label { display: grid; grid-template-columns: 100px 1fr; align-items: center; gap: 8px; color: #bfc4d1; font-size: 10px; font-weight: 800; letter-spacing: .08em; }
 meter { width: 100%; height: 8px; accent-color: #67e6a4; }
