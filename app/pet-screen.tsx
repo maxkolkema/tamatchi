@@ -45,10 +45,14 @@ export default function PetScreen() {
     if (savedPet) setPet(progress(JSON.parse(savedPet) as State, Date.now(), nextSettings.godMode));
     const savedScene = window.localStorage.getItem("tamatchi.scene") as (typeof scenes)[number] | null;
     if (savedScene && scenes.includes(savedScene)) setScene(savedScene);
-    const timer = window.setInterval(() => setPet((current) => progress(current, Date.now(), nextSettings.godMode)), 1000);
     const idleTimer = window.setInterval(() => setIdleIndex((current) => (current + 1) % idleAnimations.length), 4500);
-    return () => { window.clearInterval(timer); window.clearInterval(idleTimer); };
+    return () => window.clearInterval(idleTimer);
   }, []);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setPet((current) => progress(current, Date.now(), settings.godMode)), 1000);
+    return () => window.clearInterval(timer);
+  }, [settings.godMode]);
 
   useEffect(() => { window.localStorage.setItem("tamatchi.pet", JSON.stringify(pet)); }, [pet]);
   useEffect(() => { window.localStorage.setItem("tamatchi.settings", JSON.stringify(settings)); }, [settings]);
