@@ -8,6 +8,7 @@ type State = { needs: Needs; reaction: Reaction; lastUpdated: number };
 type Settings = { godMode: boolean };
 const initial: State = { needs: { hunger: 20, affection: 60, energy: 85, boredom: 15, cleanliness: 90 }, reaction: "", lastUpdated: Date.now() };
 const initialSettings: Settings = { godMode: false };
+const idleClips = ["idle_blink", "idle_ear_twitch", "idle_head_tilt", "idle_look_left", "idle_look_right", "idle_groom"];
 const scenes = ["scene_japan", "scene_hogwarts", "scene_sf", "scene_texas"] as const;
 
 function clamp(value: number) { return Math.max(0, Math.min(100, value)); }
@@ -52,8 +53,14 @@ export default function PetScreen() {
   const [statsOpen, setStatsOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [scene, setScene] = useState<(typeof scenes)[number]>("scene_japan");
+  const [idleClipIndex, setIdleClipIndex] = useState(0);
+  const [frame, setFrame] = useState(0);
   const [reactionToken, setReactionToken] = useState(0);
   const petTimes = useRef<number[]>([]);
+  const needs = pet.needs;
+  const sleeping = needs.energy <= 10 && !pet.reaction;
+  const clip = sleeping ? "sleeping" : pet.reaction === "angy" ? "mood_angy" : pet.reaction === "pet-bratty" || pet.reaction === "feed-offer" ? "idle_look_left" : pet.reaction === "play" ? "idle_look_right" : pet.reaction === "clean" || pet.reaction === "feed" ? "idle_groom" : needs.boredom >= 70 ? "mood_bored" : idleClips[idleClipIndex];
+  const petSource = clip === "sleeping" ? "/pets/sleeping.png" : `/pet-frames/${clip}/${frame}.png`;
 
   useEffect(() => {
     const savedSettings = window.localStorage.getItem("tamatchi.settings");
@@ -63,26 +70,31 @@ export default function PetScreen() {
     if (savedPet) setPet(progress(JSON.parse(savedPet) as State, Date.now(), nextSettings.godMode));
     const savedScene = window.localStorage.getItem("tamatchi.scene") as (typeof scenes)[number] | null;
     if (savedScene && scenes.includes(savedScene)) setScene(savedScene);
-    return undefined;
+    const idleTimer = window.setInterval(() => setIdleClipIndex((current) => (current + 1) % idleClips.length), 5200);
+    return () => window.clearInterval(idleTimer);
   }, []);
   useEffect(() => { const timer = window.setInterval(() => setPet((current) => progress(current, Date.now(), settings.godMode)), 1000); return () => window.clearInterval(timer); }, [settings.godMode]);
+  useEffect(() => {
+    setFrame(0);
+    if (clip === "sleeping") return;
+    const timer = window.setInterval(() => setFrame((current) => (current + 1) % 9), 130);
+    return () => window.clearInterval(timer);
+  }, [clip]);
   useEffect(() => { window.localStorage.setItem("tamatchi.pet", JSON.stringify(pet)); }, [pet]);
   useEffect(() => { window.localStorage.setItem("tamatchi.settings", JSON.stringify(settings)); }, [settings]);
   useEffect(() => { window.localStorage.setItem("tamatchi.scene", scene); }, [scene]);
   useEffect(() => { if (!pet.reaction) return; const timer = window.setTimeout(() => setPet((current) => ({ ...current, reaction: "" })), 2400); return () => window.clearTimeout(timer); }, [pet.reaction, reactionToken]);
 
-  const needs = pet.needs;
   const status = useMemo(() => {
-    const words: Record<Reaction, string> = { "": "TAP MOCHI TO PET", "pet-happy": "PURR...", "pet-bratty": "HMPH.", angy: "HEY! ENOUGH.", feed: "NOM NOM", "feed-offer": "NOT HUNGRY.", play: "PLAY TIME!", clean: "SQUEAKY CLEAN.", "clean-refused": "I'M ALREADY CLEAN.", tired: "TOO SLEEPY." };
+    const words: Record<Reaction, string> = { "": "TAP MATCHI TO PET", "pet-happy": "PURR...", "pet-bratty": "HMPH.", angy: "HEY! ENOUGH.", feed: "NOM NOM", "feed-offer": "NOT HUNGRY.", play: "PLAY TIME!", clean: "SQUEAKY CLEAN.", "clean-refused": "I'M ALREADY CLEAN.", tired: "TOO SLEEPY." };
     if (pet.reaction) return words[pet.reaction];
-    if (settings.godMode) return "GOD MODE • MOCHI IS THRIVING";
+    if (settings.godMode) return "GOD MODE • MATCHI IS THRIVING";
     if (needs.cleanliness <= 30) return "I NEED A BATH";
     if (needs.hunger >= 60) return "I AM HUNGRY";
     if (needs.boredom >= 70) return "I'M BORED...";
     return words[""];
   }, [needs, pet.reaction, settings.godMode]);
-  const sleeping = needs.energy <= 10 && !pet.reaction;
-  const petFrame = sleeping ? "sleeping" : pet.reaction === "angy" ? "angy" : pet.reaction === "pet-bratty" || pet.reaction === "feed-offer" || pet.reaction === "play" ? "look" : pet.reaction === "clean" || pet.reaction === "feed" ? "groom" : needs.boredom >= 70 ? "bored" : "idle";
+  const motionClass = pet.reaction === "angy" ? "angy" : pet.reaction === "play" ? "play" : pet.reaction === "clean" || pet.reaction === "feed" ? "groom" : needs.boredom >= 70 ? "bored" : "idle";
 
   function update(action: "pet" | "feed" | "play" | "clean") {
     const now = Date.now(); setReactionToken((current) => current + 1);
@@ -106,12 +118,12 @@ export default function PetScreen() {
 
   return <main className="shell">
     <header><span className="wordmark">TAMATCHI</span><div className="header-actions"><button className="stats-button" type="button" onClick={() => setStatsOpen((open) => !open)}>{statsOpen ? "HIDE" : "STATS"}</button><button className="settings-button" type="button" aria-label="Open settings" onClick={() => setSettingsOpen(true)}>⚙</button></div></header>
-    <button className={`pet-card ${sleeping ? "is-sleeping" : ""}`} type="button" aria-label="Pet Tamatchi" onClick={() => update("pet")}><img className="scene-background" src={`/animations/${scene}.gif`} alt="" aria-hidden="true" /><span className="scene-shade" aria-hidden="true" /><img key={petFrame} className={`pet-animation pet-${petFrame}`} src={`/pets/${petFrame}.png`} alt="Mochi the Tamatchi" /><IdleCue needs={needs} sleeping={sleeping} /><EffectLayer reaction={pet.reaction} token={reactionToken} />{settings.godMode && <span className="god-badge">GOD MODE</span>}<span className="pet-prompt">tap to pet</span></button>
+    <button className={`pet-card ${sleeping ? "is-sleeping" : ""}`} type="button" aria-label="Pet Tamatchi" onClick={() => update("pet")}><img className="scene-background" src={`/animations/${scene}.gif`} alt="" aria-hidden="true" /><span className="scene-shade" aria-hidden="true" /><img key={petSource} className={`pet-animation pet-${motionClass}`} src={petSource} alt="Matchi the Tamatchi" /><IdleCue needs={needs} sleeping={sleeping} /><EffectLayer reaction={pet.reaction} token={reactionToken} />{settings.godMode && <span className="god-badge">GOD MODE</span>}<span className="pet-prompt">tap to pet</span></button>
     <p className="status" aria-live="polite">{status}</p>
     <nav className="actions" aria-label="Pet actions"><button type="button" onClick={() => update("pet")}><PixelHeart />PET</button><button type="button" onClick={() => update("feed")}><PixelFish />FEED</button><button type="button" onClick={() => update("play")}><PixelToy />PLAY</button><button type="button" onClick={() => update("clean")}><PixelBubbles />CLEAN</button></nav>
     <div className="scene-picker" aria-label="Choose a scene">{scenes.map((option) => <button type="button" className={scene === option ? "selected" : ""} aria-pressed={scene === option} key={option} onClick={() => setScene(option)}>{option.replace("scene_", "").toUpperCase()}</button>)}</div>
-    {statsOpen && <section className="needs" aria-label="Mochi's needs">{(["hunger", "affection", "energy", "boredom", "cleanliness"] as const).map((key) => <label key={key}><span>{key}</span><meter min="0" max="100" value={key === "hunger" || key === "boredom" ? 100 - needs[key] : needs[key]} /></label>)}</section>}
-    {settingsOpen && <div className="dialog-backdrop" role="presentation" onClick={() => setSettingsOpen(false)}><section className="settings-panel" role="dialog" aria-modal="true" aria-label="Settings" onClick={(event) => event.stopPropagation()}><div className="settings-heading"><h2>SETTINGS</h2><button type="button" aria-label="Close settings" onClick={() => setSettingsOpen(false)}>×</button></div><label className="toggle-row"><span><strong>GOD MODE</strong><small>Needs stay frozen and every action works.</small></span><input type="checkbox" checked={settings.godMode} onChange={toggleGodMode} /></label><button className="reset-button" type="button" onClick={resetPet}>RESET MOCHI</button></section></div>}
+    {statsOpen && <section className="needs" aria-label="Matchi's needs">{(["hunger", "affection", "energy", "boredom", "cleanliness"] as const).map((key) => <label key={key}><span>{key}</span><meter min="0" max="100" value={key === "hunger" || key === "boredom" ? 100 - needs[key] : needs[key]} /></label>)}</section>}
+    {settingsOpen && <div className="dialog-backdrop" role="presentation" onClick={() => setSettingsOpen(false)}><section className="settings-panel" role="dialog" aria-modal="true" aria-label="Settings" onClick={(event) => event.stopPropagation()}><div className="settings-heading"><h2>SETTINGS</h2><button type="button" aria-label="Close settings" onClick={() => setSettingsOpen(false)}>×</button></div><label className="toggle-row"><span><strong>GOD MODE</strong><small>Needs stay frozen and every action works.</small></span><input type="checkbox" checked={settings.godMode} onChange={toggleGodMode} /></label><button className="reset-button" type="button" onClick={resetPet}>RESET MATCHI</button></section></div>}
     <p className="hint">In Safari, Share → Add to Home Screen to use Tamatchi like an app.</p><script dangerouslySetInnerHTML={{ __html: "if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');" }} />
   </main>;
 }
