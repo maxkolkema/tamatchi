@@ -87,14 +87,15 @@ export default function PetScreen() {
   useEffect(() => { if (!pet.reaction) return; const timer = window.setTimeout(() => setPet((current) => ({ ...current, reaction: "" })), 2400); return () => window.clearTimeout(timer); }, [pet.reaction, reactionToken]);
 
   const status = useMemo(() => {
-    const words: Record<Reaction, string> = { "": "TAP MATCHI TO PET", "pet-happy": "PURR...", "pet-bratty": "HMPH.", angy: "HEY! ENOUGH.", feed: "NOM NOM", "feed-offer": "NOT HUNGRY.", play: "PLAY TIME!", clean: "SQUEAKY CLEAN.", "clean-refused": "I'M ALREADY CLEAN.", tired: "TOO SLEEPY." };
+    const words: Record<Reaction, string> = { "": "TAP MATCHI TO PET", "pet-happy": "PURR...", "pet-bratty": "HMPH.", angy: "HEY! ENOUGH.", feed: "NOM NOM", "feed-offer": "NOT HUNGRY.", play: "PLAY TIME!", clean: "SQUEAKY CLEAN.", "clean-refused": "I'M ALREADY CLEAN.", tired: "EEPY..." };
     if (pet.reaction) return words[pet.reaction];
+    if (sleeping) return "EEPY TIME...";
     if (settings.godMode) return "GOD MODE • MATCHI IS THRIVING";
     if (needs.cleanliness <= 30) return "I NEED A BATH";
     if (needs.hunger >= 60) return "I AM HUNGRY";
     if (needs.boredom >= 70) return "I'M BORED...";
     return words[""];
-  }, [needs, pet.reaction, settings.godMode]);
+  }, [needs, pet.reaction, settings.godMode, sleeping]);
   const motionClass = pet.reaction === "angy" ? "angy" : pet.reaction === "play" ? "play" : pet.reaction === "clean" || pet.reaction === "feed" ? "groom" : needs.boredom >= 70 ? "bored" : "idle";
 
   function update(action: "pet" | "feed" | "play" | "clean") {
