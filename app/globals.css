@@ -2,24 +2,35 @@
 html, body { margin: 0; min-height: 100%; background: #12141c; color: #f4f5f7; font-family: ui-sans-serif, system-ui, sans-serif; }
 button { color: inherit; font: inherit; border: 0; cursor: pointer; }
 .shell { max-width: 520px; min-height: 100svh; margin: auto; padding: calc(22px + env(safe-area-inset-top)) 18px calc(28px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; overscroll-behavior: none; }
-header { display: flex; justify-content: space-between; align-items: center; color: #d7dae3; }
+header, .header-actions, .settings-heading { display: flex; align-items: center; }
+header { justify-content: space-between; color: #d7dae3; } .header-actions { gap: 14px; }
 .wordmark { font-size: 12px; font-weight: 800; letter-spacing: .28em; }
-.stats-button { background: transparent; font-size: 11px; font-weight: 800; letter-spacing: .12em; opacity: .8; }
-.pet-card { position: relative; flex: 1; min-height: 360px; margin: 24px 0 14px; display: grid; place-items: center; border-radius: 28px; overflow: hidden; background: #1b1e2a; touch-action: manipulation; user-select: none; isolation: isolate; outline: none; }
-.pet-card:focus-visible { box-shadow: 0 0 0 3px #67e6a4; }
-.scene-background { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; object-fit: cover; opacity: .72; filter: saturate(.82) brightness(.7); }
-.pet-animation { width: min(254px, 72vw); height: auto; image-rendering: pixelated; filter: drop-shadow(0 12px 18px rgba(0,0,0,.32)); }
-.thought, .stink { position: absolute; top: 16%; right: 14%; display: grid; place-items: center; min-width: 46px; min-height: 46px; border-radius: 50%; background: #f4f5f7; color: #12141c; font-size: 24px; }
-.stink { top: 24%; right: 11%; background: transparent; color: #67e6a4; font-size: 50px; }
-.status { min-height: 24px; margin: 4px 0 14px; text-align: center; color: #d7dae3; font-size: 13px; font-weight: 700; letter-spacing: .12em; }
+.stats-button, .settings-button { background: transparent; font-size: 11px; font-weight: 800; letter-spacing: .12em; opacity: .85; }
+.settings-button { font-size: 19px; line-height: 1; padding: 0; }
+.pet-card { position: relative; flex: 1; min-height: 390px; margin: 24px 0 14px; border-radius: 28px; overflow: hidden; background: #1b1e2a; touch-action: manipulation; user-select: none; isolation: isolate; padding: 0; display: block; }
+.pet-card:active .pet-animation { transform: translateX(-50%) scale(.96); }
+.scene-background, .scene-shade { position: absolute; inset: 0; width: 100%; height: 100%; }
+.scene-background { z-index: 0; object-fit: cover; image-rendering: pixelated; }
+.scene-shade { z-index: 1; background: linear-gradient(180deg, rgba(8,10,17,.10), rgba(8,10,17,.28) 68%, rgba(8,10,17,.42)); }
+.pet-animation { position: absolute; z-index: 2; width: min(268px, 74vw); height: auto; left: 50%; bottom: 7%; transform: translateX(-50%); image-rendering: pixelated; filter: drop-shadow(0 12px 14px rgba(0,0,0,.36)); transition: transform .12s ease; }
+.reaction-effect, .need-effect { position: absolute; z-index: 3; top: 17%; right: 13%; display: grid; place-items: center; min-width: 48px; min-height: 48px; border-radius: 50%; background: rgba(255,255,255,.94); color: #12141c; font-size: 25px; animation: pop .35s ease-out both; box-shadow: 0 5px 14px rgba(0,0,0,.18); }
+.need-effect { animation: bob 1.4s ease-in-out infinite; }
+.god-badge, .pet-prompt { position: absolute; z-index: 3; font-size: 9px; font-weight: 900; letter-spacing: .12em; }
+.god-badge { top: 15px; left: 15px; padding: 7px 9px; border-radius: 999px; background: #f8d74b; color: #17130b; }
+.pet-prompt { bottom: 14px; left: 0; right: 0; color: rgba(255,255,255,.82); text-shadow: 0 1px 3px rgba(0,0,0,.8); }
+@keyframes pop { from { transform: scale(.55) rotate(-12deg); opacity: 0; } to { transform: scale(1) rotate(0); opacity: 1; } } @keyframes bob { 50% { transform: translateY(-7px); } }
+.status { min-height: 24px; margin: 4px 0 14px; text-align: center; color: #d7dae3; font-size: 12px; font-weight: 800; letter-spacing: .12em; }
 .actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; }
-.actions button { padding: 14px 4px; border-radius: 999px; background: #252a38; font-size: 10px; font-weight: 800; letter-spacing: .08em; }
-.actions button:active { transform: scale(.97); background: #394154; }
-.scene-picker { display: flex; gap: 7px; overflow-x: auto; scrollbar-width: none; margin-top: 12px; padding-bottom: 2px; }
-.scene-picker::-webkit-scrollbar { display: none; }
-.scene-picker button { flex: 0 0 auto; padding: 8px 11px; border-radius: 999px; background: transparent; color: #838a9d; font-size: 9px; font-weight: 800; letter-spacing: .08em; }
-.scene-picker button.selected { background: #2c3343; color: #f4f5f7; }
+.actions button { min-height: 60px; padding: 8px 3px; border-radius: 17px; background: #252a38; font-size: 10px; font-weight: 900; letter-spacing: .06em; display: grid; place-items: center; gap: 2px; }
+.actions button span { font-size: 19px; line-height: 1; } .actions button:active { transform: scale(.96); background: #394154; }
+.scene-picker { display: flex; gap: 7px; overflow-x: auto; scrollbar-width: none; margin-top: 12px; padding-bottom: 2px; } .scene-picker::-webkit-scrollbar { display: none; }
+.scene-picker button { flex: 0 0 auto; padding: 8px 11px; border-radius: 999px; background: transparent; color: #9da4b5; font-size: 9px; font-weight: 800; letter-spacing: .08em; } .scene-picker button.selected { background: #2c3343; color: #f4f5f7; }
 .needs { display: grid; gap: 9px; margin-top: 17px; padding: 15px; border-radius: 16px; background: #1b1e2a; }
-.needs label { display: grid; grid-template-columns: 100px 1fr; align-items: center; gap: 8px; color: #bfc4d1; font-size: 10px; font-weight: 800; letter-spacing: .08em; }
-meter { width: 100%; height: 8px; accent-color: #67e6a4; }
+.needs label { display: grid; grid-template-columns: 100px 1fr; align-items: center; gap: 8px; color: #bfc4d1; font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; } meter { width: 100%; height: 8px; accent-color: #67e6a4; }
+.dialog-backdrop { position: fixed; z-index: 10; inset: 0; padding: 22px; display: grid; place-items: end center; background: rgba(6,8,13,.64); }
+.settings-panel { width: min(100%, 484px); padding: 19px; border: 1px solid #384054; border-radius: 22px; background: #1c202c; box-shadow: 0 18px 50px rgba(0,0,0,.4); }
+.settings-heading { justify-content: space-between; margin-bottom: 17px; } .settings-heading h2 { margin: 0; font-size: 13px; letter-spacing: .14em; } .settings-heading button { background: transparent; font-size: 26px; line-height: .6; color: #cbd0dc; }
+.toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px; border-radius: 14px; background: #282e3e; } .toggle-row span { display: grid; gap: 4px; font-size: 11px; letter-spacing: .06em; } .toggle-row small { color: #abb3c5; font-size: 10px; letter-spacing: 0; } .toggle-row input { width: 42px; height: 24px; accent-color: #67e6a4; }
+.reset-button { width: 100%; margin-top: 13px; padding: 12px; border-radius: 13px; background: #3a4052; font-size: 10px; font-weight: 900; letter-spacing: .1em; }
 .hint { margin: 18px 0 0; text-align: center; color: #838a9d; font-size: 11px; }
+@media (max-height: 700px) { .pet-card { min-height: 330px; } }
