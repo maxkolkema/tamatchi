@@ -12,7 +12,13 @@ header { justify-content: space-between; color: #d7dae3; } .header-actions { gap
 .scene-background, .scene-shade { position: absolute; inset: 0; width: 100%; height: 100%; }
 .scene-background { z-index: 0; object-fit: cover; image-rendering: pixelated; }
 .scene-shade { z-index: 1; background: linear-gradient(180deg, rgba(8,10,17,.10), rgba(8,10,17,.28) 68%, rgba(8,10,17,.42)); }
-.pet-animation { position: absolute; z-index: 2; width: min(268px, 74vw); height: auto; left: 50%; bottom: 7%; transform: translateX(-50%); image-rendering: pixelated; filter: drop-shadow(0 12px 14px rgba(0,0,0,.36)); transition: transform .12s ease; }
+.pet-animation { position: absolute; z-index: 2; width: min(268px, 74vw); height: auto; left: 50%; bottom: 7%; transform: translateX(-50%); image-rendering: pixelated; filter: drop-shadow(0 12px 14px rgba(0,0,0,.36)); transition: transform .12s ease; animation: mochi-breathe 2.6s steps(3, end) infinite; }
+.pet-groom { animation: mochi-groom .72s steps(3, end) infinite; }
+.pet-look { animation: mochi-playful .82s steps(3, end) infinite; }
+.pet-angy { animation: mochi-angy .34s steps(2, end) infinite; }
+.pet-bored { animation: mochi-bored 1.8s steps(3, end) infinite; }
+.is-sleeping .scene-shade { background: rgba(5, 9, 22, .56); }
+.is-sleeping .pet-animation { animation: mochi-sleep 2.1s steps(3, end) infinite; filter: drop-shadow(0 9px 12px rgba(0,0,0,.45)); }
 .reaction-effect, .need-effect { position: absolute; z-index: 3; top: 17%; right: 13%; display: grid; place-items: center; min-width: 48px; min-height: 48px; border-radius: 50%; background: rgba(255,255,255,.94); color: #12141c; font-size: 25px; animation: pop .35s ease-out both; box-shadow: 0 5px 14px rgba(0,0,0,.18); }
 .need-effect { animation: bob 1.4s ease-in-out infinite; }
 .god-badge, .pet-prompt { position: absolute; z-index: 3; font-size: 9px; font-weight: 900; letter-spacing: .12em; }
@@ -89,6 +95,16 @@ header { justify-content: space-between; color: #d7dae3; } .header-actions { gap
 .stink-cue i { position: absolute; width: 4px; height: 48px; border-left: 4px solid currentColor; border-radius: 50%; animation: stink-waft 1.3s ease-in-out infinite; }
 .stink-cue i:nth-child(1) { left: 12%; bottom: 25%; } .stink-cue i:nth-child(2) { left: 21%; bottom: 17%; animation-delay: .25s; }
 .stink-cue i:nth-child(3) { right: 16%; bottom: 24%; animation-delay: .4s; } .stink-cue i:nth-child(4) { right: 8%; bottom: 15%; animation-delay: .65s; }
+.sleep-cue { color: #f5f7ff; font-family: ui-monospace, monospace; font-weight: 900; text-shadow: 0 2px 0 #263251; }
+.sleep-cue i { position: absolute; font-style: normal; animation: sleep-z 1.9s steps(5, end) infinite; }
+.sleep-cue i:nth-child(1) { right: 19%; top: 39%; font-size: 27px; } .sleep-cue i:nth-child(2) { right: 12%; top: 27%; font-size: 20px; animation-delay: .27s; } .sleep-cue i:nth-child(3) { right: 8%; top: 18%; font-size: 14px; animation-delay: .52s; }
+@keyframes mochi-breathe { 0%, 100% { transform: translateX(-50%) translateY(0) scale(1); } 50% { transform: translateX(-50%) translateY(-2px) scale(1.012); } }
+@keyframes mochi-groom { 0%, 100% { transform: translateX(-50%) rotate(-1deg); } 50% { transform: translateX(-50%) translateY(2px) rotate(2deg); } }
+@keyframes mochi-playful { 0%, 100% { transform: translateX(-50%) rotate(-2deg); } 50% { transform: translateX(-50%) translateY(-7px) rotate(3deg); } }
+@keyframes mochi-angy { 0%, 100% { transform: translateX(-50%) translateX(-2px); } 50% { transform: translateX(-50%) translateX(2px); } }
+@keyframes mochi-bored { 0%, 100% { transform: translateX(-50%) translateY(2px); } 50% { transform: translateX(-50%) translateY(5px); } }
+@keyframes mochi-sleep { 0%, 100% { transform: translateX(-50%) translateY(2px) scale(.96); } 50% { transform: translateX(-50%) translateY(5px) scale(.975); } }
+@keyframes sleep-z { 0% { opacity: 0; transform: translate(0, 8px); } 24%, 72% { opacity: 1; } 100% { opacity: 0; transform: translate(10px, -28px); } }
 @keyframes heart-rise { 0% { opacity: 0; transform: translateY(16px) scale(.45); } 20% { opacity: 1; } 100% { opacity: 0; transform: translateY(-82px) scale(1.05); } }
 @keyframes anger-pop { 0%, 100% { transform: scale(.7); } 50% { transform: scale(1.1); } }
 @keyframes cue-pop { 0% { opacity: 0; transform: scale(.4); } 20%, 78% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(.8); } }
