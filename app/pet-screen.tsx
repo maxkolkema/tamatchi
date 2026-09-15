@@ -60,7 +60,8 @@ export default function PetScreen() {
   const needs = pet.needs;
   const sleeping = needs.energy <= 10 && !pet.reaction;
   const clip = sleeping ? "sleeping" : pet.reaction === "angy" ? "mood_angy" : pet.reaction === "pet-bratty" || pet.reaction === "feed-offer" ? "idle_look_left" : pet.reaction === "play" ? "idle_look_right" : pet.reaction === "clean" || pet.reaction === "feed" ? "idle_groom" : needs.boredom >= 70 ? "mood_bored" : idleClips[idleClipIndex];
-  const petSource = clip === "sleeping" ? "/pets/sleeping.png" : `/pet-frames/${clip}/${frame}.png`;
+  const petSource = `/pet-sheets/${clip}.png`;
+  const framePosition = clip === "sleeping" ? 0 : frame * 12.5;
 
   useEffect(() => {
     const savedSettings = window.localStorage.getItem("tamatchi.settings");
@@ -118,7 +119,7 @@ export default function PetScreen() {
 
   return <main className="shell">
     <header><span className="wordmark">TAMATCHI</span><div className="header-actions"><button className="stats-button" type="button" onClick={() => setStatsOpen((open) => !open)}>{statsOpen ? "HIDE" : "STATS"}</button><button className="settings-button" type="button" aria-label="Open settings" onClick={() => setSettingsOpen(true)}>⚙</button></div></header>
-    <button className={`pet-card ${sleeping ? "is-sleeping" : ""}`} type="button" aria-label="Pet Tamatchi" onClick={() => update("pet")}><img className="scene-background" src={`/animations/${scene}.gif`} alt="" aria-hidden="true" /><span className="scene-shade" aria-hidden="true" /><img key={petSource} className={`pet-animation pet-${motionClass}`} src={petSource} alt="Matchi the Tamatchi" /><IdleCue needs={needs} sleeping={sleeping} /><EffectLayer reaction={pet.reaction} token={reactionToken} />{settings.godMode && <span className="god-badge">GOD MODE</span>}<span className="pet-prompt">tap to pet</span></button>
+    <button className={`pet-card ${sleeping ? "is-sleeping" : ""}`} type="button" aria-label="Pet Tamatchi" onClick={() => update("pet")}><img className="scene-background" src={`/animations/${scene}.gif`} alt="" aria-hidden="true" /><span className="scene-shade" aria-hidden="true" /><span key={petSource} className={`pet-animation pet-${motionClass}`} style={{ backgroundImage: `url(${petSource})`, backgroundPosition: `center ${framePosition}%` }} aria-label="Matchi the Tamatchi" /><IdleCue needs={needs} sleeping={sleeping} /><EffectLayer reaction={pet.reaction} token={reactionToken} />{settings.godMode && <span className="god-badge">GOD MODE</span>}<span className="pet-prompt">tap to pet</span></button>
     <p className="status" aria-live="polite">{status}</p>
     <nav className="actions" aria-label="Pet actions"><button type="button" onClick={() => update("pet")}><PixelHeart />PET</button><button type="button" onClick={() => update("feed")}><PixelFish />FEED</button><button type="button" onClick={() => update("play")}><PixelToy />PLAY</button><button type="button" onClick={() => update("clean")}><PixelBubbles />CLEAN</button></nav>
     <div className="scene-picker" aria-label="Choose a scene">{scenes.map((option) => <button type="button" className={scene === option ? "selected" : ""} aria-pressed={scene === option} key={option} onClick={() => setScene(option)}>{option.replace("scene_", "").toUpperCase()}</button>)}</div>

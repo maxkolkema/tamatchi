@@ -12,13 +12,13 @@ header { justify-content: space-between; color: #d7dae3; } .header-actions { gap
 .scene-background, .scene-shade { position: absolute; inset: 0; width: 100%; height: 100%; }
 .scene-background { z-index: 0; object-fit: cover; image-rendering: pixelated; }
 .scene-shade { z-index: 1; background: linear-gradient(180deg, rgba(8,10,17,.10), rgba(8,10,17,.28) 68%, rgba(8,10,17,.42)); }
-.pet-animation { position: absolute; z-index: 2; width: min(268px, 74vw); height: auto; left: 50%; bottom: 7%; transform: translateX(-50%); image-rendering: pixelated; filter: drop-shadow(0 12px 14px rgba(0,0,0,.36)); transition: transform .12s ease; animation: mochi-breathe 2.6s steps(3, end) infinite; }
+.pet-animation { position: absolute; z-index: 2; width: min(268px, 74vw); aspect-ratio: 1; left: 50%; bottom: 7%; transform: translateX(-50%); background-repeat: no-repeat; background-size: 100% 900%; image-rendering: pixelated; filter: drop-shadow(0 12px 14px rgba(0,0,0,.36)); transition: transform .12s ease; animation: mochi-breathe 2.6s steps(3, end) infinite; }
 .pet-groom { animation: mochi-groom .72s steps(3, end) infinite; }
 .pet-look { animation: mochi-playful .82s steps(3, end) infinite; }
 .pet-angy { animation: mochi-angy .34s steps(2, end) infinite; }
 .pet-bored { animation: mochi-bored 1.8s steps(3, end) infinite; }
 .is-sleeping .scene-shade { background: rgba(5, 9, 22, .56); }
-.is-sleeping .pet-animation { animation: mochi-sleep 2.1s steps(3, end) infinite; filter: drop-shadow(0 9px 12px rgba(0,0,0,.45)); }
+.is-sleeping .pet-animation { background-size: 100% 100%; animation: mochi-sleep 2.1s steps(3, end) infinite; filter: drop-shadow(0 9px 12px rgba(0,0,0,.45)); }
 .reaction-effect, .need-effect { position: absolute; z-index: 3; top: 17%; right: 13%; display: grid; place-items: center; min-width: 48px; min-height: 48px; border-radius: 50%; background: rgba(255,255,255,.94); color: #12141c; font-size: 25px; animation: pop .35s ease-out both; box-shadow: 0 5px 14px rgba(0,0,0,.18); }
 .need-effect { animation: bob 1.4s ease-in-out infinite; }
 .god-badge, .pet-prompt { position: absolute; z-index: 3; font-size: 9px; font-weight: 900; letter-spacing: .12em; }
